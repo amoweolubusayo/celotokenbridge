@@ -2,7 +2,6 @@ require("dotenv").config();
 import Web3 from "web3";
 import { providers, Contract, ethers } from "ethers";
 
-import { CeloContract, newKit } from "@celo/contract";
 import { newAccount } from "@celo/identity";
 import TokenBridgeCeloABI from "./TokenBridgeCelo.abi.json";
 import TokenBridgeMumbaiABI from "./TokenBridgeMumbai.abi.json";
@@ -16,6 +15,8 @@ const provider = process.env.PROVIDER_URL;
 
 require("dotenv").config();
 
+
+//TODO: make it only one function getContract()
 export async function getCeloBridgeContract() {
   const bridgeCeloABI = TokenBridgeCeloABI;
   let bridgeCeloContract;
