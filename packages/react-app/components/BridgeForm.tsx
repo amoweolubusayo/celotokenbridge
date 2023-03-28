@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
+import { start } from "../../hardhat/scripts/wrapper";
 
 const currencies = [
   { name: "Matic", symbol: "MATIC" },
   { name: "Celo", symbol: "CELO" },
 ];
 
-// const SwapForm = ({ tokenName, tokenAddress, bridgeAddress, web3Provider }) => {
-const SwapForm = () => {
+const BridgeForm = () => {
   const [amount, setAmount] = useState("");
   const [swapSuccess, setSwapSuccess] = useState(false);
   const [swapError, setSwapError] = useState("");
@@ -15,37 +15,20 @@ const SwapForm = () => {
   const [fromCurrency, setFromCurrency] = useState(currencies[0]);
   const [toCurrency, setToCurrency] = useState(currencies[1]);
 
-  const handleSwap = () => {
-    // swap logic here
-    setSwapSuccess(true);
+  const handleSwap = async () => {
+    try {
+      try {
+        await start(amount);
+      } catch (error) {
+        console.error(error);
+      }
+      // Update the UI to show the donation was successful
+      setSwapSuccess(true);
+    } catch (error) {
+      console.log(error);
+      setSwapError("Something went wrong. Please try again.");
+    }
   };
-
-  //   const handleSwap = async () => {
-  //     try {
-  //       // Get signer and token contract instances
-  //       const signer = web3Provider.getSigner();
-  //       const tokenContract = new ethers.Contract(tokenAddress, abi, signer);
-
-  //       // Approve token transfer to bridge contract
-  //       const allowance = await tokenContract.allowance(signer.getAddress(), bridgeAddress);
-  //       if (allowance.lt(amount)) {
-  //         const approveTx = await tokenContract.approve(bridgeAddress, amount);
-  //         await approveTx.wait();
-  //       }
-
-  //       // Call deposit function on bridge contract
-  //       const bridgeContract = new ethers.Contract(bridgeAddress, abi, signer);
-  //       const depositTx = await bridgeContract.deposit(amount);
-  //       await depositTx.wait();
-
-  //       // Set success message and clear form
-  //       setSwapSuccess(true);
-  //       setAmount("");
-  //     } catch (error) {
-  //       console.error(error);
-  //       setSwapError("Something went wrong. Please try again.");
-  //     }
-  //   };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
@@ -187,11 +170,11 @@ const SwapForm = () => {
         Proceed
       </button>
       {swapSuccess && (
-        <p className="text-green-500 mt-4 text-sm">Swap successful!</p>
+        <p className="text-green-500 mt-4 text-sm">Bridging successful!</p>
       )}
       {swapError && <p className="text-red-500 mt-4 text-sm">{swapError}</p>}
     </div>
   );
 };
 
-export default SwapForm;
+export default BridgeForm;

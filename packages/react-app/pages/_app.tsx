@@ -3,14 +3,15 @@ import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
 import {
   connectorsForWallets,
-  RainbowKitProvider
+  RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { 
-  metaMaskWallet, 
-  omniWallet, 
-  walletConnectWallet 
+import {
+  metaMaskWallet,
+  omniWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { polygonMumbai } from 'wagmi/chains';
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 // Import known recommended wallets
@@ -22,8 +23,12 @@ import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 import Layout from "../components/Layout";
 
 const { chains, provider } = configureChains(
-  [Alfajores, Celo],
-  [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }) })]  
+  [Alfajores, Celo, polygonMumbai],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }),
+    }),
+  ]
 );
 
 const connectors = connectorsForWallets([
@@ -55,7 +60,7 @@ function App({ Component, pageProps }: AppProps) {
         </Layout>
       </RainbowKitProvider>
     </WagmiConfig>
-  )
+  );
 }
 
 export default App;

@@ -1,31 +1,35 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract TokenBridgeCelo {
-    address public tokenAddress; // address of the ERC20 token
-    address public bridgeAddress; // address of the bridge contract on the other network
+    address public tokenAddress;
 
-    event Deposit(address indexed from, uint256 amount); // event emitted when a deposit is made
-
-    constructor(address _tokenAddress, address _bridgeAddress) {
+    constructor(address _tokenAddress) {
         tokenAddress = _tokenAddress;
-        bridgeAddress = _bridgeAddress;
     }
 
-    function deposit(uint256 _amount) external {
-        // transfer tokens to this contract and emit Deposit event
-        require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), _amount), "transferFrom failed");
-        emit Deposit(msg.sender, _amount);
-    }
+    function sendToken(address recipient, uint256 amount) external {
+        require(
+            msg.sender == address(this),
+            "Only bridge can call this function"
+        );
 
-    function sendToken(address _recipient, uint256 _amount) external {
-        require(msg.sender == bridgeAddress, "sender not authorized"); // ensure that only the bridge contract on the other network can call this function
-        require(IERC20(tokenAddress).transfer(_recipient, _amount), "transfer failed"); // transfer tokens to the specified recipient
+        IERC20 token = IERC20(tokenAddress);
+        address spender = address(this);
+
+        // Approve the spender to transfer the tokens
+        require(token.approve(spender, amount), "Approval failed");
+
+        // Transfer the tokens to the recipient
+        require(
+            token.transferFrom(spender, recipient, amount),
+            "Transfer failed"
+        );
     }
 
     function getBalance() external view returns (uint256) {
-        return IERC20(tokenAddress).balanceOf(address(this)); // return the current balance of the contract
+        return IERC20(tokenAddress).balanceOf(address(this));
     }
 }

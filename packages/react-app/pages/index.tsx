@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import SwapForm from "../components/SwapForm";
+import BridgeForm from "../components/BridgeForm";
 
 export default function Home(): JSX.Element {
   return (
     <div>
-      <SwapForm />
+      <BridgeForm />
     </div>
   );
 }
