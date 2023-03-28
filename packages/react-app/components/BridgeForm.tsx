@@ -9,13 +9,13 @@ const currencies = [
 
 const BridgeForm = () => {
   const [amount, setAmount] = useState("");
-  const [swapSuccess, setSwapSuccess] = useState(false);
-  const [swapError, setSwapError] = useState("");
+  const [bridgeSuccess, setBridgeSuccess] = useState(false);
+  const [bridgeError, setBridgeError] = useState("");
 
   const [fromCurrency, setFromCurrency] = useState(currencies[0]);
   const [toCurrency, setToCurrency] = useState(currencies[1]);
 
-  const handleSwap = async () => {
+  const handleBridge = async () => {
     try {
       try {
         await start(amount);
@@ -23,10 +23,10 @@ const BridgeForm = () => {
         console.error(error);
       }
       // Update the UI to show the donation was successful
-      setSwapSuccess(true);
+      setBridgeSuccess(true);
     } catch (error) {
       console.log(error);
-      setSwapError("Something went wrong. Please try again.");
+      setBridgeError("Something went wrong. Please try again.");
     }
   };
 
@@ -165,14 +165,14 @@ const BridgeForm = () => {
       <button
         type="button"
         className="w-full py-3 px-6 rounded-md text-base font-medium text-white bg-gradient-to-br from-blue-500 to-purple-500 hover:bg-gradient-to-br hover:from-blue-600 hover:to-purple-600"
-        onClick={handleSwap}
+        onClick={handleBridge}
       >
         Proceed
       </button>
-      {swapSuccess && (
+      {bridgeSuccess && (
         <p className="text-green-500 mt-4 text-sm">Bridging successful!</p>
       )}
-      {swapError && <p className="text-red-500 mt-4 text-sm">{swapError}</p>}
+      {bridgeError && <p className="text-red-500 mt-4 text-sm">{bridgeError}</p>}
     </div>
   );
 };
