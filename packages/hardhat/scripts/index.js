@@ -1,5 +1,4 @@
 require("dotenv").config();
-const { providers, Contract, ethers } = require("ethers");
 const abi = require("../../../TokenBridgeMumbai.json");
 const Web3 = require("web3");
 const {
@@ -9,7 +8,7 @@ const {
 } = require("@celo/contractkit");
 
 // Initialize the kit with a URL to a Celo node
-const web3 = new Web3("wss://alfajores-forno.celo-testnet.org");
+const web3 = new Web3("wss://alfajores-forno.celo-testnet.org/ws");
 const kit = newKitFromWeb3(web3);
 
 const contractAddress = "0x27923264F18D9d6C9F7007B36FF5D50d56E12C97";

@@ -38,8 +38,6 @@ async function start(amount) {
   console.log(await tx);
   tx.then((receipt) => {
     console.log("Transaction receipt:", receipt);
-    // const event = receipt.events[0];
-    // console.log("Event emitted:", event);
   });
 }
 
