@@ -1,22 +1,28 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 contract TokenBridgeMumbai {
-    address public tokenAddress;
+    address public owner;
     mapping(address => uint256) public balances;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only signer can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
 
     event Deposit(address indexed depositor, uint256 amount);
 
-    constructor(address _tokenAddress) {
-        tokenAddress = _tokenAddress;
-    }
-
-    function deposit(uint256 amount) external {
-        IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
-        balances[msg.sender] += amount;
-        emit Deposit(msg.sender, amount);
+    function sendMatic(
+        uint256 amount,
+        address payable recipient
+    ) external onlyOwner {
+        require(address(this).balance >= amount, "Not enough balance");
+        bool success = recipient.send(amount);
+        require(success, "Failed to send Matic!");
     }
 
     function depositMatic() external payable {
@@ -24,4 +30,6 @@ contract TokenBridgeMumbai {
         balances[msg.sender] += msg.value;
         emit Deposit(msg.sender, msg.value);
     }
+
+    receive() external payable {}
 }

@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { providers, Contract, ethers } = require("ethers");
 const { abi } = require("../../../TokenBridgeMumbai.json");
-const bridgeMumbaiAddress = "0x27923264F18D9d6C9F7007B36FF5D50d56E12C97";
+const bridgeMumbaiAddress = "0xbDeEc110E30d65Ba25B84C58aE050bf797f52438";
 
 async function getMumbaiBridgeContract() {
   const bridgeMumbaiABI = abi;
@@ -39,6 +39,7 @@ async function start(amount) {
   tx.then((receipt) => {
     console.log("Transaction receipt:", receipt);
   });
+  return tx;
 }
 
 module.exports = { getMumbaiBridgeContract, start };

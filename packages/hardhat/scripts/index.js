@@ -1,6 +1,8 @@
 require("dotenv").config();
-const abi = require("../../../TokenBridgeMumbai.json");
+const mumbai = require("../../../TokenBridgeMumbai.json");
+const alfajores = require("../../../TokenBridgeCelo.json");
 const Web3 = require("web3");
+const ethers = require("ethers");
 const {
   CeloContract,
   newKitFromWeb3,
@@ -11,51 +13,45 @@ const {
 const web3 = new Web3("wss://alfajores-forno.celo-testnet.org/ws");
 const kit = newKitFromWeb3(web3);
 
-const contractAddress = "0x27923264F18D9d6C9F7007B36FF5D50d56E12C97";
-const contract = new kit.web3.eth.Contract(abi.abi, contractAddress);
+const mumbaiContractAddress = "0xbDeEc110E30d65Ba25B84C58aE050bf797f52438";
+const contract = new kit.web3.eth.Contract(mumbai.abi, mumbaiContractAddress);
 
 console.log("events", contract.events);
 
-const fromAddress = "0x1B46F75aC63bc57DFE82A374bDCdbfB08d125792";
-const toAddress = contract.options.address;
-
-contract.events.Deposit(
-  {
-    fromBlock: "latest",
-  },
-  async (error, event) => {
-    if (!error) {
-      console.log("Deposit event:", event);
-      const amount = event.returnValues.amount;
-      const tx = kit.sendTransaction(
-        {
-          from: fromAddress,
-          to: toAddress,
-          value: amount,
-        },
-        (error, transactionHash) => {
-          if (!error) {
-            console.log("Transaction hash:", transactionHash);
-          } else {
-            console.error("Error:", error);
-          }
-        }
-      );
-    } else {
-      console.error("Error:", error);
-    }
-    console.log(await tx);
-  }
+const providerCelo = new ethers.providers.JsonRpcProvider(
+  "https://alfajores-forno.celo-testnet.org"
 );
+const providerMumbai = new ethers.providers.JsonRpcProvider(
+  "https://rpc-mumbai.maticvigil.com"
+);
+const privateKey = process.env.PRIVATE_KEY;
+const signer = new ethers.Wallet(privateKey, providerCelo);
+const fromAddress = "0x892D2863A03bAC1fEE174b2DAbE0921c402622ED"; // Alfajores contrac
+const abi = ["function sendCelo(uint256 amount,address payable recipient)"];
+const fromContract = new ethers.Contract(fromAddress, abi, signer);
 
-contract.events
-  .Deposit({})
-  .on("connected", (subscriptionId) => {
-    console.log(`Connected to subscription ${subscriptionId}`);
-  })
-  .on("data", (event) => {
-    console.log("Received deposit event:", event);
-  })
-  .on("error", (error) => {
-    console.error("Error:", error);
-  });
+const iface = new ethers.utils.Interface([
+  "event Deposit(address indexed depositor, uint256 amount)",
+]);
+
+filter = {
+  address: mumbaiContractAddress,
+  topics: [
+    // the name of the event, parnetheses containing the data type of each event, no spaces
+    ethers.utils.id("Deposit(address,uint256)"),
+  ],
+};
+
+//Watch event
+providerMumbai.on(filter, (event) => {
+  console.log("Received event");
+  console.log("event", event);
+  const eventData = iface.decodeEventLog("Deposit", event.data, event.topics);
+  console.log(iface.decodeEventLog("Deposit", event.data, event.topics));
+  const amount = eventData.amount;
+  const tx = fromContract
+    .sendCelo(amount, eventData.depositor)
+    .then((d) => console.log(d))
+    .catch((error) => console.log(error));
+  console.log("Transaction", tx);
+});

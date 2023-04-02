@@ -1,35 +1,35 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 contract TokenBridgeCelo {
-    address public tokenAddress;
+    address public owner;
+    mapping(address => uint256) public balances;
 
-    constructor(address _tokenAddress) {
-        tokenAddress = _tokenAddress;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only signer can call this function");
+        _;
     }
 
-    function sendToken(address recipient, uint256 amount) external {
-        require(
-            msg.sender == address(this),
-            "Only bridge can call this function"
-        );
-
-        IERC20 token = IERC20(tokenAddress);
-        address spender = address(this);
-
-        // Approve the spender to transfer the tokens
-        require(token.approve(spender, amount), "Approval failed");
-
-        // Transfer the tokens to the recipient
-        require(
-            token.transferFrom(spender, recipient, amount),
-            "Transfer failed"
-        );
+    constructor() {
+        owner = msg.sender;
     }
 
-    function getBalance() external view returns (uint256) {
-        return IERC20(tokenAddress).balanceOf(address(this));
+    event Deposit(address indexed depositor, uint256 amount);
+
+    function sendCelo(
+        uint256 amount,
+        address payable recipient
+    ) external onlyOwner {
+        require(address(this).balance >= amount, "Not enough balance");
+        bool success = recipient.send(amount);
+        require(success, "Failed to send Celo!");
     }
+
+    function depositCelo() external payable {
+        require(msg.value > 0, "Amount must be greater than zero");
+        balances[msg.sender] += msg.value;
+        emit Deposit(msg.sender, msg.value);
+    }
+
+    receive() external payable {}
 }

@@ -30,7 +30,9 @@ module.exports = {
     },
     alfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [
+        "c672b3e0bd314988504b7218983300a561f2c3d8a6de42ecfef8046547c51553",
+      ],
       chainId: 44787,
     },
     // celo: {
@@ -40,14 +42,16 @@ module.exports = {
     // },
     mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [
+        "c672b3e0bd314988504b7218983300a561f2c3d8a6de42ecfef8046547c51553",
+      ],
     },
   },
   etherscan: {
     apiKey: {
-      alfajores: process.env.CELOSCAN_API_KEY,
+      alfajores: "EF4RUR69V38PRHZUHX2BKE8891JDNV1G8S",
       celo: process.env.CELOSCAN_API_KEY,
-      polygonMumbai: process.env.POLYSCAN_KEY,
+      polygonMumbai: "RZWTQKZXR47ZB6JPF8Q9M7Y3RWKDJ7WIMA",
     },
   },
   solidity: {

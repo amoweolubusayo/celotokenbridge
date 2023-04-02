@@ -9,6 +9,7 @@ const currencies = [
 
 const BridgeForm = () => {
   const [amount, setAmount] = useState("");
+  const [bridgeLoading, setBridgeLoading] = useState(false);
   const [bridgeSuccess, setBridgeSuccess] = useState(false);
   const [bridgeError, setBridgeError] = useState("");
 
@@ -18,12 +19,16 @@ const BridgeForm = () => {
   const handleBridge = async () => {
     try {
       try {
-        await start(amount);
+        let txn = await start(amount);
+        setBridgeLoading(true);
+        console.log("Loading...", txn.hash);
+        await txn.wait();
+        console.log("Finalized -- ", txn.hash);
+        setBridgeSuccess(true);
+        setBridgeLoading(false);
       } catch (error) {
         console.error(error);
       }
-      // Update the UI to show the donation was successful
-      setBridgeSuccess(true);
     } catch (error) {
       console.log(error);
       setBridgeError("Something went wrong. Please try again.");
@@ -44,11 +49,6 @@ const BridgeForm = () => {
               name="fromCurrency"
               className="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-gray-700 text-sm"
               value={fromCurrency.symbol}
-              //   onChange={(e) =>
-              //     setFromCurrency(
-              //       currencies.find((c) => c.symbol === e.target.value)
-              //     )
-              //   }
             >
               {currencies.map((currency) => (
                 <option key={currency.symbol} value={currency.symbol}>
@@ -81,11 +81,6 @@ const BridgeForm = () => {
               name="toCurrency"
               className="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-gray-700 text-sm"
               value={toCurrency.symbol}
-              //   onChange={(e) =>
-              //     setToCurrency(
-              //       currencies.find((c) => c.symbol === e.target.value)
-              //     )
-              //   }
             >
               {currencies.map((currency) => (
                 <option key={currency.symbol} value={currency.symbol}>
@@ -169,10 +164,15 @@ const BridgeForm = () => {
       >
         Proceed
       </button>
+      {bridgeLoading && <p className="text-red-500 mt-4 text-sm">Loading...</p>}
       {bridgeSuccess && (
-        <p className="text-green-500 mt-4 text-sm">Bridging successful!</p>
+        <p className="text-green-500 mt-4 text-sm">
+          Bridging successful! Check your Alfajores wallet
+        </p>
       )}
-      {bridgeError && <p className="text-red-500 mt-4 text-sm">{bridgeError}</p>}
+      {bridgeError && (
+        <p className="text-red-500 mt-4 text-sm">{bridgeError}</p>
+      )}
     </div>
   );
 };
