@@ -31,7 +31,7 @@ module.exports = {
     alfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [
-        "c672b3e0bd314988504b7218983300a561f2c3d8a6de42ecfef8046547c51553",
+        process.env.PRIVATE_KEY
       ],
       chainId: 44787,
     },
@@ -42,16 +42,14 @@ module.exports = {
     // },
     mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
-      accounts: [
-        "c672b3e0bd314988504b7218983300a561f2c3d8a6de42ecfef8046547c51553",
-      ],
+      accounts: [process.env.PRIVATE_KEY],
     },
   },
   etherscan: {
     apiKey: {
-      alfajores: "EF4RUR69V38PRHZUHX2BKE8891JDNV1G8S",
+      alfajores: process.env.CELOSCAN_API_KEY,
       celo: process.env.CELOSCAN_API_KEY,
-      polygonMumbai: "RZWTQKZXR47ZB6JPF8Q9M7Y3RWKDJ7WIMA",
+      polygonMumbai: process.env.POLYSCAN_KEY,
     },
   },
   solidity: {
